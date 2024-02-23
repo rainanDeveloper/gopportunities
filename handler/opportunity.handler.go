@@ -7,9 +7,11 @@ import (
 )
 
 func CreateOpportunityHandler(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{
-		"message": "POST opportunity",
-	})
+	request := CreateOpportunityRequest{}
+
+	context.BindJSON(&request)
+
+	logger.Infof("Request received: %+v", request)
 }
 
 func ShowOpportunityHandler(context *gin.Context) {
