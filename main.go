@@ -5,10 +5,14 @@ import (
 	"github.com/rainanDeveloper/gopportunities/router"
 )
 
+var logger *config.Logger
+
 func main() {
-	error := config.Init()
-	if error != nil {
-		panic(error)
+	logger = config.GetLogger("main")
+	err := config.Init()
+	if err != nil {
+		logger.Errorf("Config initialization error: %v", err)
+		return
 	}
 	router.Initialize()
 }
