@@ -1,38 +1,17 @@
 package router
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/rainanDeveloper/gopportunities/handler"
 )
 
 func initializeRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
-		api.GET("/opportunity", func(context *gin.Context) {
-			context.JSON(http.StatusOK, gin.H{
-				"message": "GET opportunity",
-			})
-		})
-		api.POST("/opportunity", func(context *gin.Context) {
-			context.JSON(http.StatusOK, gin.H{
-				"message": "POST opportunity",
-			})
-		})
-		api.PUT("/opportunity", func(context *gin.Context) {
-			context.JSON(http.StatusOK, gin.H{
-				"message": "PUT opportunity",
-			})
-		})
-		api.DELETE("/opportunity", func(context *gin.Context) {
-			context.JSON(http.StatusOK, gin.H{
-				"message": "DELETE opportunity",
-			})
-		})
-		api.GET("/opportunities", func(context *gin.Context) {
-			context.JSON(http.StatusOK, gin.H{
-				"message": "GET opportunities",
-			})
-		})
+		api.GET("/opportunity", handler.ShowOpportunityHandler)
+		api.POST("/opportunity", handler.CreateOpportunityHandler)
+		api.PUT("/opportunity", handler.UpdateOpportunityHandler)
+		api.DELETE("/opportunity", handler.DeleteOpportunityHandler)
+		api.GET("/opportunities", handler.ListOpportunitiesHandler)
 	}
 }
