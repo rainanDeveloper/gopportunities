@@ -1,4 +1,4 @@
-package opportunity
+package handler
 
 import (
 	"net/http"
