@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -13,6 +14,11 @@ func CreateOpportunityHandler(context *gin.Context) {
 	request := CreateOpportunityRequest{}
 
 	context.BindJSON(&request)
+
+	if err := request.Validate(); err != nil {
+		sendResponseError(context, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	oppotunity := schemas.Opportunity{
 		ID:        uuid.New(),
@@ -27,13 +33,12 @@ func CreateOpportunityHandler(context *gin.Context) {
 	}
 
 	if err := db.Create(&oppotunity).Error; err != nil {
-		logger.Errorf("Error creating opportunity: %v", err.Error())
-		sendResponseError(context, http.StatusInternalServerError, "Error during opportunity creation on database")
+		logger.Errorf("error creating opportunity: %v", err.Error())
+		sendResponseError(context, http.StatusInternalServerError, "error during opportunity creation on database")
 		return
 	}
 
 	sendResponseSuccess(context, oppotunity)
-	return
 }
 
 func ShowOpportunityHandler(context *gin.Context) {
@@ -49,9 +54,22 @@ func UpdateOpportunityHandler(context *gin.Context) {
 }
 
 func DeleteOpportunityHandler(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{
-		"message": "DELETE opportunity",
-	})
+	id := context.Param("id")
+
+	opportunity := schemas.Opportunity{}
+
+	if err := db.First(&opportunity, "id = ?", id).Error; err != nil {
+		sendResponseError(context, http.StatusNotFound, fmt.Sprintf("opportunity with id %s not found", id))
+		return
+	}
+
+	if err := db.Delete(&opportunity).Error; err != nil {
+		logger.Errorf("error deleting opportunity with id %s", id)
+		sendResponseError(context, http.StatusInternalServerError, fmt.Sprintf("error deleting opportunity with id %s", id))
+		return
+	}
+
+	sendResponseNoContent(context)
 }
 
 func ListOpportunitiesHandler(context *gin.Context) {

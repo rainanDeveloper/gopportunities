@@ -15,8 +15,12 @@ func sendResponseError(context *gin.Context, code int, message string) {
 }
 
 func sendResponseSuccess(context *gin.Context, data interface{}) {
-	context.Header("Content-Type", "application/json")
+	context.Header("Content-Type", gin.MIMEJSON)
 	context.JSON(http.StatusOK, gin.H{
 		"data": data,
 	})
+}
+
+func sendResponseNoContent(context *gin.Context) {
+	context.Data(http.StatusNoContent, gin.MIMEHTML, nil)
 }
