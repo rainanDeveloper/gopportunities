@@ -1,13 +1,19 @@
 package schemas
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Opportunity struct {
-	gorm.Model
-	Role     string
-	Company  string
-	Location string
-	Remote   bool
-	Link     string
-	Salary   int64
+	ID        uuid.UUID `gorm:"type:uuid;"`
+	Role      string
+	Company   string
+	Location  string
+	Remote    bool
+	Link      string
+	Salary    int64
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
