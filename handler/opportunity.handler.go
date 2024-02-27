@@ -42,15 +42,42 @@ func CreateOpportunityHandler(context *gin.Context) {
 }
 
 func ShowOpportunityHandler(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{
-		"message": "GET opportunity",
-	})
+	id := context.Param("id")
+
+	opportunity := schemas.Opportunity{}
+
+	if err := db.First(&opportunity, "id = ?", id).Error; err != nil {
+		sendResponseError(context, http.StatusNotFound, fmt.Sprintf("opportunity with id %s not found", id))
+		return
+	}
+
+	sendResponseSuccess(context, opportunity)
 }
 
 func UpdateOpportunityHandler(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{
-		"message": "PUT opportunity",
-	})
+	request := CreateOpportunityRequest{}
+
+	context.BindJSON(&request)
+	id := context.Param("id")
+
+	if err := request.Validate(); err != nil {
+		sendResponseError(context, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	opportunity := schemas.Opportunity{}
+
+	if err := db.First(&opportunity, "id = ?", id).Error; err != nil {
+		sendResponseError(context, http.StatusNotFound, fmt.Sprintf("opportunity with id %s not found", id))
+		return
+	}
+
+	if err := db.Save(&opportunity).Error; err != nil {
+		sendResponseError(context, http.StatusInternalServerError, "error while updating the opportunity on database")
+		return
+	}
+
+	sendResponseSuccess(context, opportunity)
 }
 
 func DeleteOpportunityHandler(context *gin.Context) {
@@ -73,7 +100,13 @@ func DeleteOpportunityHandler(context *gin.Context) {
 }
 
 func ListOpportunitiesHandler(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{
-		"message": "GET opportunities",
-	})
+	opportunity := []schemas.Opportunity{}
+
+	if err := db.Find(&opportunity).Error; err != nil {
+		logger.Errorf("error listing opportunities")
+		sendResponseError(context, http.StatusInternalServerError, "error listing opportunities")
+		return
+	}
+
+	sendResponseSuccess(context, opportunity)
 }

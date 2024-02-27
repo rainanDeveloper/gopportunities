@@ -3,7 +3,7 @@ package handler
 import "fmt"
 
 func errParamIsRequired(name string, typ string) error {
-	return fmt.Errorf("Param \"%s\" (type: %s) is required", name, typ)
+	return fmt.Errorf("param \"%s\" (type: %s) is required", name, typ)
 }
 
 type CreateOpportunityRequest struct {
@@ -40,4 +40,21 @@ func (request *CreateOpportunityRequest) Validate() error {
 	}
 
 	return nil
+}
+
+type UpdateOpportunityRequest struct {
+	Role     string  `json:"role"`
+	Company  string  `json:"company"`
+	Location string  `json:"location"`
+	Remote   *bool   `json:"remote"`
+	Link     string  `json:"link"`
+	Salary   float64 `json:"salary"`
+}
+
+func (request *UpdateOpportunityRequest) Validate() error {
+	if request.Role != "" || request.Company != "" || request.Location != "" || request.Remote != nil || request.Link != "" || request.Salary > 0 {
+		return nil
+	}
+
+	return fmt.Errorf("at least one field must be informed")
 }
