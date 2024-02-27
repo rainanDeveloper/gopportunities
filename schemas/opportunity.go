@@ -13,7 +13,7 @@ type Opportunity struct {
 	Location  string
 	Remote    bool
 	Link      string
-	Salary    int64
+	Salary    float64
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
