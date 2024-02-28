@@ -10,6 +10,18 @@ import (
 	"github.com/rainanDeveloper/gopportunities/schemas"
 )
 
+// @BasePath /api/v1
+
+// @Summary Create Opportunity
+// @Description Create a new job opportunity
+// Tags Opportunities
+// @Accept json
+// @Produce json
+// @Param request body CreateOpportunityRequest true "Request body"
+// @Success 200 {object} CreateOpportunityResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /opportunity [post]
 func CreateOpportunityHandler(context *gin.Context) {
 	request := CreateOpportunityRequest{}
 

@@ -1,0 +1,81 @@
+definitions:
+  handler.CreateOpportunityRequest:
+    properties:
+      company:
+        type: string
+      link:
+        type: string
+      location:
+        type: string
+      remote:
+        type: boolean
+      role:
+        type: string
+      salary:
+        type: number
+    type: object
+  handler.CreateOpportunityResponse:
+    properties:
+      data:
+        $ref: '#/definitions/schemas.OpportunityResponseBody'
+    type: object
+  handler.ErrorResponse:
+    properties:
+      message:
+        type: string
+      status_code:
+        type: string
+    type: object
+  schemas.OpportunityResponseBody:
+    properties:
+      company:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      location:
+        type: string
+      remote:
+        type: boolean
+      role:
+        type: string
+      salary:
+        type: number
+      updated_at:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /opportunity:
+    post:
+      consumes:
+      - application/json
+      description: Create a new job opportunity
+      parameters:
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateOpportunityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.CreateOpportunityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Create Opportunity
+swagger: "2.0"
