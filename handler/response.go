@@ -34,3 +34,15 @@ type ErrorResponse struct {
 type CreateOpportunityResponse struct {
 	Data schemas.OpportunityResponseBody `json:"data"`
 }
+
+type ShowOpportunityResponse struct {
+	Data schemas.OpportunityResponseBody `json:"data"`
+}
+
+type UpdateOpportunityResponse struct {
+	Data schemas.OpportunityResponseBody `json:"data"`
+}
+
+type ListOpportunitiesResponse struct {
+	Data []schemas.OpportunityResponseBody `json:"data"`
+}

@@ -26,6 +26,38 @@ definitions:
       status_code:
         type: string
     type: object
+  handler.ListOpportunitiesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/schemas.OpportunityResponseBody'
+        type: array
+    type: object
+  handler.ShowOpportunityResponse:
+    properties:
+      data:
+        $ref: '#/definitions/schemas.OpportunityResponseBody'
+    type: object
+  handler.UpdateOpportunityRequest:
+    properties:
+      company:
+        type: string
+      link:
+        type: string
+      location:
+        type: string
+      remote:
+        type: boolean
+      role:
+        type: string
+      salary:
+        type: number
+    type: object
+  handler.UpdateOpportunityResponse:
+    properties:
+      data:
+        $ref: '#/definitions/schemas.OpportunityResponseBody'
+    type: object
   schemas.OpportunityResponseBody:
     properties:
       company:
@@ -50,6 +82,29 @@ definitions:
 info:
   contact: {}
 paths:
+  /opportunities:
+    get:
+      consumes:
+      - application/json
+      description: List all job opportunities available
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ListOpportunitiesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: List Opportunities
+      tags:
+      - Opportunities
   /opportunity:
     post:
       consumes:
@@ -78,4 +133,91 @@ paths:
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
       summary: Create Opportunity
+      tags:
+      - Opportunities
+  /opportunity/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific job opportunity by id
+      parameters:
+      - description: Opportunity Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Delete a Opportunity
+      tags:
+      - Opportunities
+    get:
+      consumes:
+      - application/json
+      description: Find a specific job opportunity by id
+      parameters:
+      - description: Opportunity Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ShowOpportunityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Find a Opportunity
+      tags:
+      - Opportunities
+    put:
+      consumes:
+      - application/json
+      description: Update a specific job opportunity by id
+      parameters:
+      - description: Opportunity Id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateOpportunityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UpdateOpportunityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Update a Opportunity
+      tags:
+      - Opportunities
 swagger: "2.0"

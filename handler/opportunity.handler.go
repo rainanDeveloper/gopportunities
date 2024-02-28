@@ -14,7 +14,7 @@ import (
 
 // @Summary Create Opportunity
 // @Description Create a new job opportunity
-// Tags Opportunities
+// @Tags Opportunities
 // @Accept json
 // @Produce json
 // @Param request body CreateOpportunityRequest true "Request body"
@@ -32,7 +32,7 @@ func CreateOpportunityHandler(context *gin.Context) {
 		return
 	}
 
-	oppotunity := schemas.Opportunity{
+	opportunity := schemas.Opportunity{
 		ID:        uuid.New(),
 		Role:      request.Role,
 		Company:   request.Company,
@@ -44,15 +44,26 @@ func CreateOpportunityHandler(context *gin.Context) {
 		UpdatedAt: time.Now(),
 	}
 
-	if err := db.Create(&oppotunity).Error; err != nil {
+	if err := db.Create(&opportunity).Error; err != nil {
 		logger.Errorf("error creating opportunity: %v", err.Error())
 		sendResponseError(context, http.StatusInternalServerError, "error during opportunity creation on database")
 		return
 	}
 
-	sendResponseSuccess(context, oppotunity)
+	responseData := schemas.OpportunityResponseBody(opportunity)
+
+	sendResponseSuccess(context, responseData)
 }
 
+// @Summary Find a Opportunity
+// @Description Find a specific job opportunity by id
+// @Tags Opportunities
+// @Accept json
+// @Produce json
+// @Param id path string true "Opportunity Id"
+// @Success 200 {object} ShowOpportunityResponse
+// @Failure 400 {object} ErrorResponse
+// @Router /opportunity/{id} [get]
 func ShowOpportunityHandler(context *gin.Context) {
 	id := context.Param("id")
 
@@ -63,11 +74,24 @@ func ShowOpportunityHandler(context *gin.Context) {
 		return
 	}
 
-	sendResponseSuccess(context, opportunity)
+	responseData := schemas.OpportunityResponseBody(opportunity)
+
+	sendResponseSuccess(context, responseData)
 }
 
+// @Summary Update a Opportunity
+// @Description Update a specific job opportunity by id
+// @Tags Opportunities
+// @Accept json
+// @Produce json
+// @Param id path string true "Opportunity Id"
+// @Param request body UpdateOpportunityRequest true "Request body"
+// @Success 200 {object} UpdateOpportunityResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /opportunity/{id} [put]
 func UpdateOpportunityHandler(context *gin.Context) {
-	request := CreateOpportunityRequest{}
+	request := UpdateOpportunityRequest{}
 
 	context.BindJSON(&request)
 	id := context.Param("id")
@@ -84,14 +108,50 @@ func UpdateOpportunityHandler(context *gin.Context) {
 		return
 	}
 
+	if request.Role != "" {
+		opportunity.Role = request.Role
+	}
+
+	if request.Company != "" {
+		opportunity.Company = request.Company
+	}
+
+	if request.Link != "" {
+		opportunity.Link = request.Link
+	}
+
+	if request.Location != "" {
+		opportunity.Location = request.Location
+	}
+
+	if request.Remote != nil {
+		opportunity.Remote = *request.Remote
+	}
+
+	if request.Salary > 0 {
+		opportunity.Salary = request.Salary
+	}
+
 	if err := db.Save(&opportunity).Error; err != nil {
 		sendResponseError(context, http.StatusInternalServerError, "error while updating the opportunity on database")
 		return
 	}
 
-	sendResponseSuccess(context, opportunity)
+	responseData := schemas.OpportunityResponseBody(opportunity)
+
+	sendResponseSuccess(context, responseData)
 }
 
+// @Summary Delete a Opportunity
+// @Description Delete a specific job opportunity by id
+// @Tags Opportunities
+// @Accept json
+// @Produce json
+// @Param id path string true "Opportunity Id"
+// @Success 204 {object} nil
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /opportunity/{id} [delete]
 func DeleteOpportunityHandler(context *gin.Context) {
 	id := context.Param("id")
 
@@ -111,14 +171,29 @@ func DeleteOpportunityHandler(context *gin.Context) {
 	sendResponseNoContent(context)
 }
 
+// @Summary List Opportunities
+// @Description List all job opportunities available
+// @Tags Opportunities
+// @Accept json
+// @Produce json
+// @Success 200 {object} ListOpportunitiesResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /opportunities [get]
 func ListOpportunitiesHandler(context *gin.Context) {
-	opportunity := []schemas.Opportunity{}
+	opportunities := []schemas.Opportunity{}
 
-	if err := db.Find(&opportunity).Error; err != nil {
+	if err := db.Find(&opportunities).Error; err != nil {
 		logger.Errorf("error listing opportunities")
 		sendResponseError(context, http.StatusInternalServerError, "error listing opportunities")
 		return
 	}
 
-	sendResponseSuccess(context, opportunity)
+	responseData := []schemas.OpportunityResponseBody{}
+
+	for i := 0; i < len(opportunities); i++ {
+		responseData = append(responseData, schemas.OpportunityResponseBody(opportunities[i]))
+	}
+
+	sendResponseSuccess(context, responseData)
 }
